@@ -19,6 +19,9 @@ func main() {
 
 	e := echo.New()
 
+	// Configuration de la base de données
+	config.ConnectDb()
+
 	router.InitRoutes(e)
 
 	port := os.Getenv("SERVER_PORT")
