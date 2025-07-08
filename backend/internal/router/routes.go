@@ -2,21 +2,23 @@ package router
 
 import (
 	"github.com/labstack/echo/v4"
+	"go.mongodb.org/mongo-driver/v2/mongo"
 	"net/http"
 	"station_meteo_api/internal/handler"
+	"station_meteo_api/internal/repository"
 	"station_meteo_api/internal/service"
 )
 
-func InitRoutes(e *echo.Echo) {
+func InitRoutes(e *echo.Echo, db *mongo.Database) {
 	e.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Welcome to the Station Meteo API")
 	})
 
-	measurementService := service.NewMeasurementService()
+	measureRepository := repository.NewMeasureRepository(db)
+	measurementService := service.NewMeasurementService(measureRepository)
 	measurementHandler := handler.NewMeasurementHandler(measurementService)
 
 	// Routes liés aux mesures
-
 	e.POST("/api/v1/measurements", measurementHandler.CreateMeasure)
 
 	e.GET("/api/v1/measurements", measurementHandler.GetAllMeasures)

@@ -20,9 +20,9 @@ func main() {
 	e := echo.New()
 
 	// Configuration de la base de données
-	config.ConnectDb()
+	db := config.ConnectDb()
 
-	router.InitRoutes(e)
+	router.InitRoutes(e, db.Database("station_meteo"))
 
 	port := os.Getenv("SERVER_PORT")
 	logger.Infof("Serveur lancé sur http://localhost%s", port)
