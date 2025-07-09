@@ -4,6 +4,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"net/http"
 	"station_meteo_api/internal/service"
+	"strconv"
 )
 
 type MeasurementHandler struct {
@@ -23,7 +24,13 @@ func (h *MeasurementHandler) CreateMeasure(c echo.Context) error {
 
 // GetAllMeasures Récupération de toutes les mesures
 func (h *MeasurementHandler) GetAllMeasures(c echo.Context) error {
-	measurements, err := h.service.GetAllMeasurements()
+	limit := c.QueryParam("limit")
+	// Conversion int
+	limitConvert, err := strconv.Atoi(limit)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, "Limit must be an integer")
+	}
+	measurements, err := h.service.GetAllMeasurements(limitConvert)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{
 			"error": "failed to fetch measurements",

@@ -4,6 +4,7 @@ import (
 	"context"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
 	"station_meteo_api/internal/model"
 )
 
@@ -37,8 +38,9 @@ func (r *MeasureRepository) FindById(ctx context.Context, id string) (*model.Mea
 	return &result, nil
 }
 
-func (r *MeasureRepository) FindAll(ctx context.Context) ([]model.MeasureModel, error) {
-	cursor, err := r.collection.Find(ctx, bson.M{})
+func (r *MeasureRepository) FindAll(ctx context.Context, limit int) ([]model.MeasureModel, error) {
+	opts := options.Find().SetLimit(int64(limit))
+	cursor, err := r.collection.Find(ctx, bson.M{}, opts)
 	if err != nil {
 		return nil, err
 	}
