@@ -2,11 +2,13 @@ package main
 
 import (
 	"errors"
+	"github.com/go-playground/validator"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"net/http"
 	"os"
 	"station_meteo_api/internal/config"
+	"station_meteo_api/internal/form"
 	"station_meteo_api/internal/router"
 )
 
@@ -24,6 +26,9 @@ func main() {
 
 	router.InitRoutes(e, db.Database("station_meteo"))
 
+	e.Validator = &form.MeasurementFormValidator{
+		Validator: validator.New(),
+	}
 	port := os.Getenv("SERVER_PORT")
 	logger.Infof("Serveur lancé sur http://localhost%s", port)
 	if err := e.Start(port); err != nil && !errors.Is(err, http.ErrServerClosed) {

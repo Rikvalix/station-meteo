@@ -3,6 +3,7 @@ package handler
 import (
 	"github.com/labstack/echo/v4"
 	"net/http"
+	"station_meteo_api/internal/form"
 	"station_meteo_api/internal/service"
 	"strconv"
 )
@@ -19,7 +20,14 @@ func NewMeasurementHandler(service *service.MeasurementService) *MeasurementHand
 
 // CreateMeasure Création d'une mesure
 func (h *MeasurementHandler) CreateMeasure(c echo.Context) error {
-	return c.JSON(201, "TODO")
+	dataForm := new(form.MeasurementForm)
+	if err := c.Bind(dataForm); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	if err := c.Validate(dataForm); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	return c.JSON(http.StatusOK, dataForm)
 }
 
 // GetAllMeasures Récupération de toutes les mesures
