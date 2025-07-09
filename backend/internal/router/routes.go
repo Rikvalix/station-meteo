@@ -25,7 +25,7 @@ func InitRoutes(e *echo.Echo, db *mongo.Database) {
 
 	e.GET("/api/v1/measurements/:id", measurementHandler.GetMeasureById)
 
-	e.PUT("/api/v1/measurements/latest", measurementHandler.GetLatestMeasure)
+	e.GET("/api/v1/measurements/latest", measurementHandler.GetLatestMeasure)
 
 	// Routes liés aux statistiques
 	e.GET("/api/v1/stats/daily", func(c echo.Context) error {

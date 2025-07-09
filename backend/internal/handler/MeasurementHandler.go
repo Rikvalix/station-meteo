@@ -4,6 +4,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"net/http"
 	"station_meteo_api/internal/form"
+	"station_meteo_api/internal/model"
 	"station_meteo_api/internal/service"
 	"strconv"
 )
@@ -69,5 +70,8 @@ func (h *MeasurementHandler) GetMeasureById(c echo.Context) error {
 
 // GetLatestMeasure Récupération de la dernière mesure
 func (h *MeasurementHandler) GetLatestMeasure(c echo.Context) error {
-	return c.JSON(200, "TODO")
+	station := c.Get("station").(*model.StationModel)
+	return c.JSON(http.StatusOK, map[string]string{
+		"message": "Hello " + station.Name,
+	})
 }

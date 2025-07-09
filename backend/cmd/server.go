@@ -9,6 +9,7 @@ import (
 	"os"
 	"station_meteo_api/internal/config"
 	"station_meteo_api/internal/form"
+	"station_meteo_api/internal/middleware"
 	"station_meteo_api/internal/router"
 )
 
@@ -24,11 +25,16 @@ func main() {
 	// Configuration de la base de données
 	db := config.ConnectDb()
 
-	router.InitRoutes(e, db.Database("station_meteo"))
-
+	// Validator
 	e.Validator = &form.MeasurementFormValidator{
 		Validator: validator.New(),
 	}
+
+	// Middleware authentication
+	e.Use(middleware.APIKeyAuthMiddleware(db.Database("station_meteo")))
+
+	router.InitRoutes(e, db.Database("station_meteo"))
+
 	port := os.Getenv("SERVER_PORT")
 	logger.Infof("Serveur lancé sur http://localhost%s", port)
 	if err := e.Start(port); err != nil && !errors.Is(err, http.ErrServerClosed) {
