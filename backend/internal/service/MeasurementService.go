@@ -2,8 +2,9 @@ package service
 
 import (
 	"context"
-	"fmt"
+	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/v2/bson"
+	"station_meteo_api/internal/form"
 	"station_meteo_api/internal/model"
 	"station_meteo_api/internal/repository"
 	"time"
@@ -19,17 +20,9 @@ func NewMeasurementService(repo *repository.MeasureRepository) *MeasurementServi
 	}
 }
 
-func (service *MeasurementService) GetAllMeasurements(limit int) ([]model.MeasureModel, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-	data, err := service.measureRepository.FindAll(ctx, limit)
-	if err != nil {
-		return nil, err
-	}
-	return data, nil
-}
+// CREATE
 
-func (service *MeasurementService) CreateMeasurement(data map[string]interface{}) (*model.MeasureModel, error) {
+func (service *MeasurementService) CreateMeasurement(data *form.MeasurementForm) (*model.MeasureModel, error) {
 	// Parse et valide les données
 	newMeasurement, err := parseMeasurementData(data)
 
@@ -48,43 +41,46 @@ func (service *MeasurementService) CreateMeasurement(data map[string]interface{}
 	return created, nil
 }
 
-func parseMeasurementData(data map[string]interface{}) (*model.MeasureModel, error) {
-	temp, ok := data["temperature"].(float64)
-	if !ok {
-		return nil, fmt.Errorf("missing or invalid 'temperature'")
-	}
+// READ
 
-	humidity, ok := data["humidity"].(float64)
-	if !ok {
-		return nil, fmt.Errorf("missing or invalid 'humidity'")
-	}
-
-	address, ok := data["address"].(string)
-	if !ok {
-		return nil, fmt.Errorf("missing or invalid 'address'")
-	}
-
-	location, ok := data["location"].(string)
-	if !ok {
-		return nil, fmt.Errorf("missing or invalid 'location'")
-	}
-
-	stationIDStr, ok := data["station_id"].(string)
-	if !ok {
-		return nil, fmt.Errorf("missing or invalid 'station_id'")
-	}
-
-	stationID, err := bson.ObjectIDFromHex(stationIDStr)
+func (service *MeasurementService) GetAllMeasurements(limit int) ([]model.MeasureModel, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	data, err := service.measureRepository.FindAll(ctx, limit)
 	if err != nil {
-		return nil, fmt.Errorf("invalid ObjectID format for 'station_id'")
+		return nil, err
 	}
+	return data, nil
+}
+
+func (service *MeasurementService) GetMeasureById(id string) (*model.MeasureModel, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	data, err := service.measureRepository.FindByPublicId(ctx, id)
+	if err != nil {
+
+		return nil, err
+	}
+	return data, nil
+}
+
+// UPDATE
+
+// DELETE
+
+// UTILS
+
+func parseMeasurementData(data *form.MeasurementForm) (*model.MeasureModel, error) {
+	// Générer nouvel id
+	id := uuid.New().String()
 
 	return &model.MeasureModel{
 		Date:        time.Now(),
-		Temperature: temp,
-		Humidity:    humidity,
-		Address:     address,
-		Location:    location,
-		StationID:   stationID,
+		PublicId:    id,
+		Temperature: data.Temperature,
+		Humidity:    data.Humidity,
+		Address:     data.Address,
+		Location:    data.Location,
+		StationID:   bson.NewObjectID(), // Temporaire
 	}, nil
 }

@@ -64,3 +64,12 @@ func (r *MeasureRepository) FindAll(ctx context.Context, limit int) ([]model.Mea
 
 	return results, nil
 }
+
+func (r *MeasureRepository) FindByPublicId(ctx context.Context, publicId string) (*model.MeasureModel, error) {
+	var result model.MeasureModel
+	err := r.collection.FindOne(ctx, bson.M{"public_id": publicId}).Decode(&result)
+	if err != nil {
+		return nil, err
+	}
+	return &result, nil
+}

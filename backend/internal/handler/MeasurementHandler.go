@@ -27,7 +27,13 @@ func (h *MeasurementHandler) CreateMeasure(c echo.Context) error {
 	if err := c.Validate(dataForm); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
-	return c.JSON(http.StatusOK, dataForm)
+	measurement, err := h.service.CreateMeasurement(dataForm)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{
+			"error": "failed to create measurements",
+		})
+	}
+	return c.JSON(http.StatusOK, measurement)
 }
 
 // GetAllMeasures Récupération de toutes les mesures
@@ -50,7 +56,15 @@ func (h *MeasurementHandler) GetAllMeasures(c echo.Context) error {
 
 // GetMeasureById Récupération d'une mesure par son ID
 func (h *MeasurementHandler) GetMeasureById(c echo.Context) error {
-	return c.JSON(200, "TODO")
+	id := c.Param("id")
+	measure, err := h.service.GetMeasureById(id)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{
+			"error": "failed to fetch measurements",
+		})
+	}
+	return c.JSON(http.StatusOK, measure)
+
 }
 
 // GetLatestMeasure Récupération de la dernière mesure
