@@ -28,7 +28,10 @@ func (h *MeasurementHandler) CreateMeasure(c echo.Context) error {
 	if err := c.Validate(dataForm); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
-	measurement, err := h.service.CreateMeasurement(dataForm)
+
+	station := c.Get("station").(*model.StationModel)
+	measurement, err := h.service.CreateMeasurement(dataForm, station)
+
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{
 			"error": "failed to create measurements",

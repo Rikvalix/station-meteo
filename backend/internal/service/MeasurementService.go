@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 	"github.com/google/uuid"
-	"go.mongodb.org/mongo-driver/v2/bson"
+	"github.com/labstack/echo/v4"
 	"station_meteo_api/internal/form"
 	"station_meteo_api/internal/model"
 	"station_meteo_api/internal/repository"
@@ -12,6 +12,7 @@ import (
 
 type MeasurementService struct {
 	measureRepository *repository.MeasureRepository
+	context           echo.Context
 }
 
 func NewMeasurementService(repo *repository.MeasureRepository) *MeasurementService {
@@ -22,9 +23,9 @@ func NewMeasurementService(repo *repository.MeasureRepository) *MeasurementServi
 
 // CREATE
 
-func (service *MeasurementService) CreateMeasurement(data *form.MeasurementForm) (*model.MeasureModel, error) {
+func (service *MeasurementService) CreateMeasurement(data *form.MeasurementForm, station *model.StationModel) (*model.MeasureModel, error) {
 	// Parse et valide les données
-	newMeasurement, err := parseMeasurementData(data)
+	newMeasurement, err := service.parseMeasurementData(data, station)
 
 	if err != nil {
 		return nil, err
@@ -70,7 +71,7 @@ func (service *MeasurementService) GetMeasureById(id string) (*model.MeasureMode
 
 // UTILS
 
-func parseMeasurementData(data *form.MeasurementForm) (*model.MeasureModel, error) {
+func (service *MeasurementService) parseMeasurementData(data *form.MeasurementForm, station *model.StationModel) (*model.MeasureModel, error) {
 	// Générer nouvel id
 	id := uuid.New().String()
 
@@ -81,6 +82,6 @@ func parseMeasurementData(data *form.MeasurementForm) (*model.MeasureModel, erro
 		Humidity:    data.Humidity,
 		Address:     data.Address,
 		Location:    data.Location,
-		StationID:   bson.NewObjectID(), // Temporaire
+		StationID:   station.ID, // Id de la station émettrice
 	}, nil
 }
