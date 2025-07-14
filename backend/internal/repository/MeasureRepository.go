@@ -13,7 +13,7 @@ type MeasureRepository struct {
 }
 
 func NewMeasureRepository(db *mongo.Database) *MeasureRepository {
-	collection := db.Collection("measurements") // Nom de la collection pour les mesures
+	collection := db.Collection("mesures") // Nom de la collection pour les mesures
 	return &MeasureRepository{collection: collection}
 }
 

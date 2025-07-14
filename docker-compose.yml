@@ -2,6 +2,7 @@ services:
 
   mongo:
     image: mongo
+    container_name: "station_meteo_mongo"
     restart: always
     env_file: .env
     ports:
@@ -9,6 +10,9 @@ services:
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+    volumes:
+      - ./mongodb/initdb.d/initdb.js:/docker-entrypoint-initdb.d/initdb.js:ro
+      - mongodb-data:/data/db/
 
   mongo-express:
     image: mongo-express
@@ -21,3 +25,6 @@ services:
       ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
       ME_CONFIG_MONGODB_URL: mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongo:27017/
       ME_CONFIG_BASICAUTH: false
+
+volumes:
+  mongodb-data:

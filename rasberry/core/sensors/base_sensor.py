@@ -8,4 +8,4 @@ class BaseSensor:
         Lire une mesure
         :return:
         """
-        raise NotImplementedError("Impémentation dans une sous classe")
+        raise NotImplementedError("Implementation dans une sous classe")
