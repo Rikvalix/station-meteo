@@ -4,11 +4,12 @@ services:
     build:
       context: backend
       dockerfile: Dockerfile
+    image: station_meteo_backend:latest
     container_name: "station_meteo_backend_echo"
     restart: unless-stopped
     env_file: backend/.env
     ports:
-      - "8080:8080"
+      - "5001:5001"
     environment:
       - PORT=${SERVER_PORT}
       - MONGO_DB_URL="mongodb://${MONGO_DB_USER}:${MONGO_DB_PASSWORD}@${MONGO_DB_HOST}:${MONGO_DB_PORT}/${MONGO_DB_NAME}?authSource=admin"
