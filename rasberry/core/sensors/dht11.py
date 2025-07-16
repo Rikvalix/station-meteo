@@ -1,11 +1,11 @@
 from .base_sensor import BaseSensor
 import adafruit_dht
-from ...utils.logger import logger
+from rasberry.utils.logger import logger
 
 class DHT11(BaseSensor):
     def __init__(self, pin):
         super().__init__("DHT-11", pin)
-        self.sensor = adafruit_dht.DHT11
+        self.sensor = adafruit_dht.DHT11(pin)
 
     def read(self):
         try:

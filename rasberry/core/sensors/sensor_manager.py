@@ -1,7 +1,7 @@
 import board
 
 from .sensor_factory import SensorFactory
-from ...utils.logger import logger
+from rasberry.utils.logger import logger
 
 
 class SensorManager:
