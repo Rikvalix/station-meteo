@@ -1,6 +1,9 @@
 package middleware
 
-import "github.com/labstack/echo/v4"
+import (
+	"github.com/labstack/echo/v4"
+	"net/http"
+)
 
 /*
 UserAuthMiddleware
@@ -10,6 +13,11 @@ UserAuthMiddleware
 func UserAuthMiddleware() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
+			authHeader := c.Request().Header.Get("Authorization")
+			if authHeader == "" {
+				return echo.NewHTTPError(http.StatusUnauthorized, "Authorization header required")
+			}
+
 			return next(c)
 		}
 	}

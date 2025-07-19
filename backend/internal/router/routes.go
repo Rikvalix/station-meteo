@@ -19,27 +19,30 @@ func InitRoutes(e *echo.Echo, db *mongo.Database) {
 	measurementService := service.NewMeasurementService(measureRepository)
 	measurementHandler := handler.NewMeasurementHandler(measurementService)
 
-	stationGroup := e.Group("/api/v1/station")
+	userRepository := repository.NewUserRepository(db)
+	userService := service.NewUserService(userRepository)
+	userHandler := handler.NewUserHandler(userService)
 
-	stationGroup.Use(middleware.APIKeyAuthMiddleware(db))
+	// Routes liés à l'utilisateur
+	userGroup := e.Group("/api/v1/user")
+	userGroup.POST("/login", userHandler.Login)
+
 	// Routes liés aux mesures
+	stationGroup := e.Group("/api/v1/station")
+	stationGroup.Use(middleware.APIKeyAuthMiddleware(db))
+
 	stationGroup.POST("/measurements", measurementHandler.CreateMeasure)
-
 	stationGroup.GET("/measurements", measurementHandler.GetAllMeasures)
-
 	stationGroup.GET("/measurements/:id", measurementHandler.GetMeasureById)
-
 	stationGroup.GET("/measurements/latest", measurementHandler.GetLatestMeasure)
 
 	// Routes liés aux statistiques
 	stationGroup.GET("/stats/daily", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Daily statistics")
 	})
-
 	stationGroup.GET("/stats/weekly", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Weekly statistics")
 	})
-
 	stationGroup.GET("/stats/range", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Statistics for a range of dates from"+c.QueryParam("from")+" to "+c.QueryParam("to"))
 	})
@@ -48,7 +51,6 @@ func InitRoutes(e *echo.Echo, db *mongo.Database) {
 	stationGroup.GET("/meta/info", func(c echo.Context) error {
 		return c.String(http.StatusOK, "System information")
 	})
-
 	stationGroup.GET("/system/ping", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Pong")
 	})
