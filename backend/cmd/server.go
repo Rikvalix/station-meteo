@@ -9,7 +9,6 @@ import (
 	"os"
 	"station_meteo_api/internal/config"
 	"station_meteo_api/internal/form"
-	"station_meteo_api/internal/middleware"
 	"station_meteo_api/internal/router"
 )
 
@@ -29,9 +28,6 @@ func main() {
 	e.Validator = &form.MeasurementFormValidator{
 		Validator: validator.New(),
 	}
-
-	// Middleware authentication
-	e.Use(middleware.APIKeyAuthMiddleware(db.Database("station_meteo")))
 
 	router.InitRoutes(e, db.Database("station_meteo"))
 
