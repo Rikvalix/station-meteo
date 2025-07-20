@@ -80,8 +80,8 @@ func (service *MeasurementService) parseMeasurementData(data *form.MeasurementFo
 		PublicId:    id,
 		Temperature: data.Temperature,
 		Humidity:    data.Humidity,
-		Address:     data.Address,
-		Location:    data.Location,
+		Address:     station.Address,
+		Location:    station.Location,
 		StationID:   station.ID, // Id de la station émettrice
 	}, nil
 }
