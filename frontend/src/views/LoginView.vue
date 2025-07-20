@@ -1,15 +1,28 @@
 <script setup lang="ts">
 
 import {ref} from "vue";
+import {useUserStore} from "../stores/UserStore.ts";
+import CustomSnackbar from "../components/Snackbar.vue";
+import {useRouter} from "vue-router";
 
+const userStore = useUserStore();
 const authForm = ref({
   pseudo: "",
   password: "",
 })
+const snackbar = ref({status: false, message: "", type: "primary"})
+const seePassword = ref(false)
+const router = useRouter()
 
 
-const loginForm = () => {
-
+const loginForm = async () => {
+    const result = await userStore.loginUser(authForm.value.pseudo, authForm.value.password);
+    if (result) {
+      snackbar.value = {status: true, message: "Connecté", type: "success"}
+      await router.push("/home")
+    } else {
+      snackbar.value = {status: true, message: "Erreur de connexion", type: "error"}
+    }
 }
 
 </script>
@@ -21,7 +34,7 @@ const loginForm = () => {
       <v-col
           cols="6"
       >
-        <v-img src="/public/images/login_view.svg" alt="login image"  />
+        <v-img src="/images/login_view.svg" alt="login image"  />
       </v-col>
       <v-col
           cols="6"
@@ -49,11 +62,12 @@ const loginForm = () => {
               <v-text-field
                   label="Mot de passe"
                   prepend-inner-icon="mdi-lock"
-
+                  :append-inner-icon="seePassword ? 'mdi-eye' : 'mdi-eye-off'"
                   v-model="authForm.password"
-                  type="password"
+                  :type="seePassword ? 'text' : 'password'"
                   color="primary"
                   variant="outlined"
+                  @click:append-inner="seePassword = !seePassword"
               />
 
               <v-btn
@@ -72,6 +86,7 @@ const loginForm = () => {
       </v-col>
     </v-row>
   </v-container>
+  <CustomSnackbar :snackbar="snackbar" />
 </template>
 
 

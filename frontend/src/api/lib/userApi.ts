@@ -3,7 +3,8 @@ import {client} from "../client.ts";
 export const userApi = {
 
     loginUser: async (username: string, password: string) => {
-        const result = await client.post('/user/login', {
+        console.log(client)
+        const result = await client.post('/api/v1/user/login', {
             "username": username,
             "password": password
         })

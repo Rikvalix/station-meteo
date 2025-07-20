@@ -12,7 +12,7 @@ export const useUserStore = defineStore('user', {
     getters: {
         // Recherche l'utilisateur courant
         getCurrentUser: () => {
-            if (!localStorage.getItem("userToken")) {
+            if (!localStorage.getItem("user")) {
                 return null
             }
         }
@@ -23,8 +23,9 @@ export const useUserStore = defineStore('user', {
             try {
                 const result = await userApi.loginUser(username, password);
                 if (result) {
-                    // Set le token
-                    return result
+                    this.user = result;
+                    localStorage.setItem("user", JSON.stringify(result));
+                    return true
                 }
             } catch {
                 return null;

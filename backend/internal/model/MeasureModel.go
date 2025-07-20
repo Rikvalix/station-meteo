@@ -6,7 +6,7 @@ import (
 )
 
 type MeasureModel struct {
-	ID          bson.ObjectID `json:"_id" bson:"_id,omitempty"`
+	ID          bson.ObjectID `json:"-" bson:"_id,omitempty"`
 	PublicId    string        `json:"public_id" bson:"public_id"`
 	Date        time.Time     `json:"date" bson:"date"`               // Date et heure
 	Temperature float64       `json:"temperature" bson:"temperature"` // Temperature

@@ -1,4 +1,5 @@
 export default interface UserModel {
-    pseudo: string,
+    username: string,
     authToken: string,
+
 }
