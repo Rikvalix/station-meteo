@@ -35,3 +35,4 @@ class SensorManager:
 
         return data if data else None
 
+
