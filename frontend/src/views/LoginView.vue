@@ -49,7 +49,9 @@ const loginForm = () => {
               <v-text-field
                   label="Mot de passe"
                   prepend-inner-icon="mdi-lock"
+
                   v-model="authForm.password"
+                  type="password"
                   color="primary"
                   variant="outlined"
               />
