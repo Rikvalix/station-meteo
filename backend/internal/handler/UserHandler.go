@@ -3,6 +3,7 @@ package handler
 import (
 	"github.com/labstack/echo/v4"
 	"net/http"
+	"station_meteo_api/internal/form"
 	"station_meteo_api/internal/service"
 )
 
@@ -18,5 +19,17 @@ func NewUserHandler(service *service.UserService) *UserHandler {
 
 // Login authentification de l'utilisateur
 func (userHandler *UserHandler) Login(c echo.Context) error {
-	return c.JSON(http.StatusOK, "Login  route")
+	dataForm := new(form.LoginForm)
+	if err := c.Bind(dataForm); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	if err := c.Validate(dataForm); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	auth, err := userHandler.service.Login(dataForm)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	return c.JSON(http.StatusOK, auth)
 }
