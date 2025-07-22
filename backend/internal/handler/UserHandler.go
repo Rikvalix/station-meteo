@@ -33,3 +33,12 @@ func (userHandler *UserHandler) Login(c echo.Context) error {
 	}
 	return c.JSON(http.StatusOK, auth)
 }
+
+// GetAllStations Renvoi toutes les stations disponibles
+func (userHandler *UserHandler) GetAllStations(c echo.Context) error {
+	stations, err := userHandler.service.GetAllStations()
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	return c.JSON(http.StatusOK, stations)
+}

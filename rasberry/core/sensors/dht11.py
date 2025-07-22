@@ -11,13 +11,12 @@ class DHT11(BaseSensor):
         try:
             temp = self.sensor.temperature or 0.0
             humidity = self.sensor.humidity or 0.0
+            if temp is None or humidity is None:
+                self.read()
             return {
                 "temperature": temp,
                 "humidity": humidity,
             }
         except Exception as e:
             logger.error(f"Sensor read failed: {e}")
-            return {
-                "temperature": None,
-                "humidity": None
-            }
+            self.read()

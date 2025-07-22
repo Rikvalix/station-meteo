@@ -15,17 +15,22 @@ func InitRoutes(e *echo.Echo, db *mongo.Database) {
 		return c.JSON(http.StatusOK, "Welcome to the Station Meteo API")
 	})
 
+	userRepository := repository.NewUserRepository(db)
+	stationRepository := repository.NewStationRepository(db)
 	measureRepository := repository.NewMeasureRepository(db)
+
 	measurementService := service.NewMeasurementService(measureRepository)
 	measurementHandler := handler.NewMeasurementHandler(measurementService)
 
-	userRepository := repository.NewUserRepository(db)
-	userService := service.NewUserService(userRepository)
+	userService := service.NewUserService(userRepository, stationRepository)
 	userHandler := handler.NewUserHandler(userService)
 
 	// Routes liés à l'utilisateur
 	userGroup := e.Group("/api/v1/user")
+	userGroup.Use(middleware.UserAuthMiddleware(db))
+
 	userGroup.POST("/login", userHandler.Login)
+	userGroup.GET("/station", userHandler.GetAllStations)
 
 	// Routes liés aux mesures
 	stationGroup := e.Group("/api/v1/station")

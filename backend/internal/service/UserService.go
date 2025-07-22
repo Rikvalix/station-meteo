@@ -12,13 +12,15 @@ import (
 )
 
 type UserService struct {
-	userRepository *repository.UserRepository
+	userRepository    *repository.UserRepository
+	stationRepository *repository.StationRepository
 	context.Context
 }
 
-func NewUserService(repo *repository.UserRepository) *UserService {
+func NewUserService(repo *repository.UserRepository, stationRepo *repository.StationRepository) *UserService {
 	return &UserService{
-		userRepository: repo,
+		userRepository:    repo,
+		stationRepository: stationRepo,
 	}
 }
 
@@ -41,6 +43,17 @@ func (userService *UserService) Login(data *form.LoginForm) (*model.UserModel, e
 		return nil, errors.New("le mot de passe ne correspond pas")
 	}
 
+}
+
+// GetAllStations Renvoi toutes les stations
+func (userService *UserService) GetAllStations() ([]model.StationModel, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	stations, err := userService.stationRepository.FindAll(ctx)
+	if err != nil {
+		return nil, errors.New("erreur pendant le renvoi des stations")
+	}
+	return stations, nil
 }
 
 // createAuthToken créer un token d'authentification avec UUID

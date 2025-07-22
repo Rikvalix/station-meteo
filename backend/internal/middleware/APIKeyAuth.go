@@ -30,7 +30,7 @@ func APIKeyAuthMiddleware(db *mongo.Database) echo.MiddlewareFunc {
 			repo := repository.NewStationRepository(db)
 			station, err := repo.FindByAuthKey(ctx, apiKey)
 			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, "Invalid API Key")
+				return echo.NewHTTPError(http.StatusUnauthorized, "Invalid API Key")
 			}
 
 			// Set la station courante

@@ -25,3 +25,27 @@ func (r *StationRepository) FindByAuthKey(ctx context.Context, auth_key string) 
 	}
 	return &result, err
 }
+
+func (r *StationRepository) FindAll(ctx context.Context) ([]model.StationModel, error) {
+	cursor, err := r.collection.Find(ctx, bson.M{})
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	var results []model.StationModel
+
+	for cursor.Next(ctx) {
+		var result model.StationModel
+		err := cursor.Decode(&result)
+		if err != nil {
+			return nil, err
+		}
+		results = append(results, result)
+	}
+	if err := cursor.Err(); err != nil {
+		return nil, err
+	}
+
+	return results, nil
+}
