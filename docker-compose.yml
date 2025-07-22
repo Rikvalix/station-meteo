@@ -4,7 +4,7 @@ services:
     build:
       context: backend
       dockerfile: Dockerfile
-    image: station_meteo_backend:latest
+    image: station_meteo_backend:1.0
     container_name: "station_meteo_backend_echo"
     restart: unless-stopped
     env_file: backend/.env
