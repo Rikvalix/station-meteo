@@ -1,4 +1,12 @@
 <script setup lang="ts">
+import {useUserStore} from "../stores/UserStore.ts";
+import {onMounted} from "vue";
+
+const userStore = useUserStore()
+
+onMounted(async () => {
+  await userStore.getAllStations()
+})
 
 </script>
 
@@ -14,12 +22,13 @@
             Station actuelle
           </v-card-title>
           <v-card-text>
-            Le merlerault - Chambre
+            {{userStore.stations[0].name}} - {{userStore.stations[0].address}}
           </v-card-text>
           <v-card-actions>
             <v-select
                 label="Changer de station"
-                :items="['Le Merlerault', 'Caen', 'Nantes']"
+                :items=userStore.stations
+                item-title="name"
                 variant="outlined"
             />
 
