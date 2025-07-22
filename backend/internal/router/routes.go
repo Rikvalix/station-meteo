@@ -27,10 +27,14 @@ func InitRoutes(e *echo.Echo, db *mongo.Database) {
 
 	// Routes liés à l'utilisateur
 	userGroup := e.Group("/api/v1/user")
-	userGroup.Use(middleware.UserAuthMiddleware(db))
 
-	e.POST("/login", userHandler.Login)
-	userGroup.GET("/station", userHandler.GetAllStations)
+	// Routes publiques
+	userGroup.POST("/login", userHandler.Login)
+
+	// Routes protégées
+	userAuthGroup := userGroup.Group("")
+	userAuthGroup.Use(middleware.UserAuthMiddleware(db))
+	userAuthGroup.GET("/station", userHandler.GetAllStations)
 
 	// Routes liés aux mesures
 	stationGroup := e.Group("/api/v1/station")
