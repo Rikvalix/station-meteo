@@ -29,7 +29,7 @@ func InitRoutes(e *echo.Echo, db *mongo.Database) {
 	userGroup := e.Group("/api/v1/user")
 	userGroup.Use(middleware.UserAuthMiddleware(db))
 
-	userGroup.POST("/login", userHandler.Login)
+	e.POST("/login", userHandler.Login)
 	userGroup.GET("/station", userHandler.GetAllStations)
 
 	// Routes liés aux mesures
