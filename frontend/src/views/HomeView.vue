@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {useUserStore} from "../stores/UserStore.ts";
-import {onMounted} from "vue";
+import {onMounted, watch, ref} from "vue";
 
 const userStore = useUserStore()
 
@@ -8,12 +8,22 @@ onMounted(async () => {
   await userStore.getAllStations()
 })
 
+// Loader
+const stationLoad = ref(true)
+
+watch(userStore.stations, (newVal) => {
+  if (newVal.length > 0) {
+    stationLoad.value = false
+  }
+})
+
+
 </script>
 
 <template>
   <v-container fluid>
-    <v-row align-content="start">
-      <v-col cols="4">
+    <v-row>
+      <v-col cols="12">
         <v-card
             class="pa-2"
             rounded="lg"
@@ -22,7 +32,11 @@ onMounted(async () => {
             Station actuelle
           </v-card-title>
           <v-card-text>
-            {{userStore.stations[0].name}} - {{userStore.stations[0].address}}
+            <v-skeleton-loader
+                :loading="stationLoad"
+            >
+              {{ userStore.stations[0].name }} - {{ userStore.stations[0].address }}
+            </v-skeleton-loader>
           </v-card-text>
           <v-card-actions>
             <v-select
@@ -35,17 +49,43 @@ onMounted(async () => {
           </v-card-actions>
         </v-card>
       </v-col>
-      <v-col cols="4">
-        <v-card>
-        <v-card-title>Actuellement</v-card-title>
+    </v-row>
+    <v-row>
+      <v-col cols="12">
+        <v-card
+                rounded="lg">
+          <v-card-title>Actuellement</v-card-title>
           <v-card-text>
+            <v-row>
+              <v-col cols="6">
+                <v-card
+                    variant="plain"
+                >
+                  <v-card-title>
+                    <h3>21.2°c</h3>
+                  </v-card-title>
+                </v-card>
+              </v-col>
+              <v-col cols="6">
+                <v-card
+                    variant="plain"
+                >
+                  <v-card-title>
+                    <h3>52%</h3>
+                  </v-card-title>
+                </v-card>
+              </v-col>
+            </v-row>
+
 
           </v-card-text>
         </v-card>
       </v-col>
-      <v-col cols="4">
+    </v-row>
+    <v-row>
+      <v-col cols="12">
         <v-card>
-          <v-card-title>Mes informations</v-card-title>
+          <v-card-title>Relevés</v-card-title>
           <v-card-text>
 
           </v-card-text>

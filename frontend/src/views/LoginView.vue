@@ -30,27 +30,22 @@ const loginForm = async () => {
 <template>
   <v-container
   >
-    <v-row>
+    <v-row justify="center">
       <v-col
-          cols="6"
-      >
-        <v-img src="/images/login_view.svg" alt="login image"  />
-      </v-col>
-      <v-col
-          cols="6"
+          cols="auto"
       >
         <v-card
-            class="pa-8"
             variant="flat"
-            max-width="400"
-            width="100%"
         >
-          <v-card-title class="text-h4 text-center mb-6">
-            Connexion
+          <v-card-title class="text-h4 font-weight-bold text-center d-flex justify-center align-center gap-2 mb-6">
+            <v-icon size="32" color="primary">mdi-lock-open</v-icon>
+            <span class="text-primary">Connexion</span>
           </v-card-title>
+
 
           <v-card-text>
             <v-form @submit.prevent="loginForm">
+
               <v-text-field
                   label="Pseudo"
                   prepend-inner-icon="mdi-email-outline"
