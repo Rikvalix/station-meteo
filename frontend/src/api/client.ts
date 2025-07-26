@@ -1,4 +1,5 @@
 import axios from "axios";
+import router from "../router/router.ts";
 
 const baseUrl = import.meta.env.VITE_BASE_API_URL;
 
@@ -20,4 +21,16 @@ client.interceptors.request.use(
         return config;
     },
     error => Promise.reject(error)
+)
+
+client.interceptors.response.use(
+    function (response) {
+        return response
+    },
+    async function (error) {
+        if (error.response && error.response.status === 401) {
+            await router.push("/login")
+        }
+        return Promise.reject(error)
+    }
 )

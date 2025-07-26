@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {useUserStore} from "../stores/UserStore.ts";
-import {onMounted, watch, ref} from "vue";
+import {onMounted, watch, ref, computed} from "vue";
 
 const userStore = useUserStore()
 
@@ -8,8 +8,16 @@ onMounted(async () => {
   await userStore.getAllStations()
 })
 
+
+
 // Loader
 const stationLoad = ref(true)
+
+const currentStation = computed(() => {
+  if (stationLoad.value) {
+    return userStore.stations[0]
+  }
+})
 
 watch(userStore.stations, (newVal) => {
   if (newVal.length > 0) {
@@ -44,6 +52,7 @@ watch(userStore.stations, (newVal) => {
                 :items=userStore.stations
                 item-title="name"
                 variant="outlined"
+                v-model="currentStation"
             />
 
           </v-card-actions>
