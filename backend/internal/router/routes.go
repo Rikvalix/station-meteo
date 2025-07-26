@@ -19,7 +19,7 @@ func InitRoutes(e *echo.Echo, db *mongo.Database) {
 	stationRepository := repository.NewStationRepository(db)
 	measureRepository := repository.NewMeasureRepository(db)
 
-	measurementService := service.NewMeasurementService(measureRepository)
+	measurementService := service.NewMeasurementService(measureRepository, stationRepository)
 	measurementHandler := handler.NewMeasurementHandler(measurementService)
 
 	userService := service.NewUserService(userRepository, stationRepository)
@@ -33,7 +33,7 @@ func InitRoutes(e *echo.Echo, db *mongo.Database) {
 
 	// Routes protégées
 	userAuthGroup := userGroup.Group("")
-	userAuthGroup.Use(middleware.UserAuthMiddleware(db))
+	userAuthGroup.Use(middleware.APIKeyAuthMiddleware(db))
 	userAuthGroup.GET("/station", userHandler.GetAllStations)
 
 	// Routes liés aux mesures
@@ -43,7 +43,7 @@ func InitRoutes(e *echo.Echo, db *mongo.Database) {
 	stationGroup.POST("/measurements", measurementHandler.CreateMeasure)
 	stationGroup.GET("/measurements", measurementHandler.GetAllMeasures)
 	stationGroup.GET("/measurements/:id", measurementHandler.GetMeasureById)
-	stationGroup.GET("/measurements/latest", measurementHandler.GetLatestMeasure)
+	stationGroup.GET("/measurements/latest/:id", measurementHandler.GetLatestMeasure)
 
 	// Routes liés aux statistiques
 	stationGroup.GET("/stats/daily", func(c echo.Context) error {

@@ -26,6 +26,16 @@ func (r *StationRepository) FindByAuthKey(ctx context.Context, auth_key string) 
 	return &result, err
 }
 
+func (r *StationRepository) FindByPublicId(ctx context.Context, id string) (*model.StationModel, error) {
+	filter := bson.M{"public_id": id}
+	var result model.StationModel
+	err := r.collection.FindOne(ctx, filter).Decode(&result)
+	if err != nil {
+		return nil, err
+	}
+	return &result, err
+}
+
 func (r *StationRepository) FindAll(ctx context.Context) ([]model.StationModel, error) {
 	cursor, err := r.collection.Find(ctx, bson.M{})
 	if err != nil {

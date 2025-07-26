@@ -27,15 +27,21 @@ func APIKeyAuthMiddleware(db *mongo.Database) echo.MiddlewareFunc {
 			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 			defer cancel()
 
-			repo := repository.NewStationRepository(db)
-			station, err := repo.FindByAuthKey(ctx, apiKey)
-			if err != nil {
-				return echo.NewHTTPError(http.StatusUnauthorized, "Invalid API Key")
+			stationRepo := repository.NewStationRepository(db)
+			userRepo := repository.NewUserRepository(db)
+			user, err := userRepo.GetUserByAuthToken(ctx, apiKey)
+			if err == nil {
+				c.Set("user", user)
+				return next(c)
+			} else {
+				station, err := stationRepo.FindByAuthKey(ctx, apiKey)
+				if err == nil {
+					c.Set("station", station)
+					return next(c)
+				} else {
+					return echo.NewHTTPError(http.StatusUnauthorized, "Invalid API key")
+				}
 			}
-
-			// Set la station courante
-			c.Set("station", station)
-			return next(c)
 		}
 	}
 }

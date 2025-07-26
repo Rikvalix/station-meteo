@@ -4,6 +4,7 @@ import "go.mongodb.org/mongo-driver/v2/bson"
 
 type StationModel struct {
 	ID         bson.ObjectID `json:"-" bson:"_id,omitempty"`
+	Public     string        `json:"public_id" bson:"public_id"`
 	Name       string        `json:"name" bson:"name"`
 	AuthKey    string        `json:"auth_key" bson:"auth_key"`
 	Location   string        `json:"location" bson:"location"`

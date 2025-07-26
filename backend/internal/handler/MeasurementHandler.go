@@ -73,8 +73,17 @@ func (h *MeasurementHandler) GetMeasureById(c echo.Context) error {
 
 // GetLatestMeasure Récupération de la dernière mesure
 func (h *MeasurementHandler) GetLatestMeasure(c echo.Context) error {
-	station := c.Get("station").(*model.StationModel)
-	return c.JSON(http.StatusOK, map[string]string{
-		"message": "Hello " + station.Name,
-	})
+	id := c.Param("id")
+	if len(id) == 0 {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"error": "ID is required",
+		})
+	}
+	measure, err := h.service.GetLatestMesure(id)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{
+			"error": "failed to fetch measurement",
+		})
+	}
+	return c.JSON(http.StatusOK, measure)
 }

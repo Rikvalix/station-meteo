@@ -12,12 +12,14 @@ import (
 
 type MeasurementService struct {
 	measureRepository *repository.MeasureRepository
+	stationRepository *repository.StationRepository
 	context           echo.Context
 }
 
-func NewMeasurementService(repo *repository.MeasureRepository) *MeasurementService {
+func NewMeasurementService(repo *repository.MeasureRepository, stationRepo *repository.StationRepository) *MeasurementService {
 	return &MeasurementService{
 		measureRepository: repo,
+		stationRepository: stationRepo,
 	}
 }
 
@@ -60,6 +62,18 @@ func (service *MeasurementService) GetMeasureById(id string) (*model.MeasureMode
 	data, err := service.measureRepository.FindByPublicId(ctx, id)
 	if err != nil {
 
+		return nil, err
+	}
+	return data, nil
+}
+
+func (service *MeasurementService) GetLatestMesure(id string) (*model.MeasureModel, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	stations, err := service.stationRepository.FindByPublicId(ctx, id)
+
+	data, err := service.measureRepository.FindByStationId(ctx, stations.ID)
+	if err != nil {
 		return nil, err
 	}
 	return data, nil

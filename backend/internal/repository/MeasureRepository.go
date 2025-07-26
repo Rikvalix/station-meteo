@@ -29,11 +29,13 @@ func (r *MeasureRepository) Create(ctx context.Context, data *model.MeasureModel
 	return data, nil
 }
 
-func (r *MeasureRepository) FindById(ctx context.Context, id string) (*model.MeasureModel, error) {
+func (r *MeasureRepository) FindByStationId(ctx context.Context, stationId bson.ObjectID) (*model.MeasureModel, error) {
 	var result model.MeasureModel
-	err := r.collection.FindOne(ctx, bson.M{"_id": id}).Decode(&result)
+	opts := options.FindOne().SetSort(bson.D{{"_id", -1}})
+	err := r.collection.FindOne(ctx, bson.M{"station_id": stationId}, opts).Decode(&result)
 	if err != nil {
 		return nil, err
+
 	}
 	return &result, nil
 }
