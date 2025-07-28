@@ -8,5 +8,14 @@ export const measureApi = {
         } else {
             return []
         }
+    },
+
+    getLatestMesureByStationId : async (stationId: string) => {
+        const result = await client.get("/api/v1/station/measurements/latest/" + stationId)
+        if (result.status === 200) {
+            return result.data
+        } else {
+            return null
+        }
     }
 }
