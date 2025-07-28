@@ -40,9 +40,9 @@ func (r *MeasureRepository) FindByStationId(ctx context.Context, stationId bson.
 	return &result, nil
 }
 
-func (r *MeasureRepository) FindAll(ctx context.Context, limit int) ([]model.MeasureModel, error) {
+func (r *MeasureRepository) FindAll(ctx context.Context, limit int, stationId string) ([]model.MeasureModel, error) {
 	opts := options.Find().SetLimit(int64(limit))
-	cursor, err := r.collection.Find(ctx, bson.M{}, opts)
+	cursor, err := r.collection.Find(ctx, bson.M{"station_id": stationId}, opts)
 	if err != nil {
 		return nil, err
 	}

@@ -46,10 +46,10 @@ func (service *MeasurementService) CreateMeasurement(data *form.MeasurementForm,
 
 // READ
 
-func (service *MeasurementService) GetAllMeasurements(limit int) ([]model.MeasureModel, error) {
+func (service *MeasurementService) GetAllMeasurements(limit int, stationId string) ([]model.MeasureModel, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	data, err := service.measureRepository.FindAll(ctx, limit)
+	data, err := service.measureRepository.FindAll(ctx, limit, stationId)
 	if err != nil {
 		return nil, err
 	}

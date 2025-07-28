@@ -43,12 +43,16 @@ func (h *MeasurementHandler) CreateMeasure(c echo.Context) error {
 // GetAllMeasures Récupération de toutes les mesures
 func (h *MeasurementHandler) GetAllMeasures(c echo.Context) error {
 	limit := c.QueryParam("limit")
+	stationId := c.QueryParam("station")
 	// Conversion int
 	limitConvert, err := strconv.Atoi(limit)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, "Limit must be an integer")
 	}
-	measurements, err := h.service.GetAllMeasurements(limitConvert)
+	if len(stationId) == 0 {
+		return c.JSON(http.StatusBadRequest, "Station ID is required")
+	}
+	measurements, err := h.service.GetAllMeasurements(limitConvert, stationId)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{
 			"error": "failed to fetch measurements",
