@@ -17,5 +17,13 @@ export const measureApi = {
         } else {
             return null
         }
+    },
+
+    getAllMeasuresByStationId: async (stationId: string, limit: number) => {
+        const result = await client.get("/api/v1/station/measurements?limit="+limit+"&station=" + stationId)
+        if (result.status === 200) {
+            return result.data
+        }
+        return null
     }
 }
