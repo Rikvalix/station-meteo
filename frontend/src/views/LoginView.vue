@@ -51,6 +51,7 @@ const loginForm = async () => {
                   prepend-inner-icon="mdi-email-outline"
                   v-model="authForm.pseudo"
                   color="primary"
+                  autocomplete="username"
                   variant="outlined"
               />
 
@@ -62,6 +63,7 @@ const loginForm = async () => {
                   :type="seePassword ? 'text' : 'password'"
                   color="primary"
                   variant="outlined"
+                  autocomplete="current-password"
                   @click:append-inner="seePassword = !seePassword"
               />
 

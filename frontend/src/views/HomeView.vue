@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import {useUserStore} from "../stores/UserStore.ts";
-import {onMounted, watch, ref, computed} from "vue";
+import {computed, onMounted, ref, watch} from "vue";
 import {useMeasureStore} from "../stores/MeasureStore.ts";
 import {format} from 'date-fns'
 import LineChart from "../components/charts/LineChart.vue";
 import type MeasureModel from "../model/MeasureModel.ts";
 import {dateUtils} from "../utils/dateUtils.ts";
 import CustomSnackbar from "../components/Snackbar.vue";
+import {weatherUtils} from "../utils/weatherUtils.ts";
+import {TemperatureEnum} from "../model/enum/TemperatureEnum.ts";
+import {HumidityEnum} from "../model/enum/HumidityEnum.ts";
 
 const userStore = useUserStore()
 const measureStore = useMeasureStore()
@@ -30,6 +33,36 @@ const currentStation = computed(() => {
   }
 })
 
+// Calculer couleur température et humidité
+const getTempColor = computed(() => {
+  const tempType = weatherUtils.getTemperatureCategory(measureStore.latestMeasure.temperature)
+  switch (tempType) {
+    case TemperatureEnum.Cold:
+      return 'primary'
+    case TemperatureEnum.Cool:
+      return 'success'
+    case TemperatureEnum.Comfortable:
+      return 'info'
+    default:
+      return 'warning'
+  }
+})
+
+const getHumidityColor = computed(() => {
+  const humidityType = weatherUtils.getHumidityCategory(measureStore.latestMeasure.humidity)
+  switch (humidityType) {
+    case HumidityEnum.TooDry:
+      return 'primary'
+    case HumidityEnum.Comfortable:
+      return 'success'
+    case HumidityEnum.Humid:
+      return 'warning'
+    default:
+      return 'danger'
+
+  }
+})
+
 watch(
     () => userStore.stations,
     async (newVal) => {
@@ -44,7 +77,7 @@ watch(
             }
           }
         } catch (err) {
-         snackbar.value = {status: true, message: "Erreur lors de la récupération des mesures", type: "error"}
+          snackbar.value = {status: true, message: "Erreur lors de la récupération des mesures", type: "error"}
         }
       }
     },
@@ -66,20 +99,25 @@ watch(
 )
 
 watch(() => measureStore.measures, (newVal) => {
-  console.log("updates valeures")
   if (newVal && newVal.length > 0) {
     measuresLoad.value = false
   }
 })
 
 
-
 </script>
 
 <template>
   <v-container fluid>
-    <v-row>
-      <v-col cols="12">
+    <v-row align="stretch">
+      <v-col cols="12" md="4" lg="4" class="d-sm-block">
+        <v-card
+            rounded="lg"
+            height="100%">
+          <v-card-title><h2>Bonjour <span class="font-weight-bold">{{ userStore.user.username }}</span></h2></v-card-title>
+        </v-card>
+      </v-col>
+      <v-col cols="12" sm="12" md="4" lg="4">
         <v-card
             class="pa-2"
             rounded="lg"
@@ -107,11 +145,10 @@ watch(() => measureStore.measures, (newVal) => {
           </v-card-actions>
         </v-card>
       </v-col>
-    </v-row>
-    <v-row>
-      <v-col cols="12">
+      <v-col cols="12" sm="12" md="4" lg="4">
         <v-card
-            rounded="lg">
+            rounded="lg"
+            height="100%">
           <v-card-title>Actuellement</v-card-title>
           <v-skeleton-loader
               :loading="measuresLoad"
@@ -132,7 +169,7 @@ watch(() => measureStore.measures, (newVal) => {
                   <v-card
                       variant="plain"
                   >
-                    <v-card-title>
+                    <v-card-title :class="[`text-${getTempColor}`]">
                       <h3>{{ measureStore.latestMeasure.temperature }}°c</h3>
                     </v-card-title>
                   </v-card>
@@ -146,18 +183,17 @@ watch(() => measureStore.measures, (newVal) => {
                   <v-card
                       variant="plain"
                   >
-                    <v-card-title>
+                    <v-card-title :class="[`text-${getHumidityColor}`]">
                       <h3>{{ measureStore.latestMeasure.humidity }}%</h3>
                     </v-card-title>
                   </v-card>
                 </v-skeleton-loader>
               </v-col>
             </v-row>
-
-
           </v-card-text>
         </v-card>
       </v-col>
+
     </v-row>
     <v-row>
       <v-col cols="12">
@@ -208,7 +244,7 @@ watch(() => measureStore.measures, (newVal) => {
     </v-row>
 
   </v-container>
-  <CustomSnackbar :snackbar="snackbar" />
+  <CustomSnackbar :snackbar="snackbar"/>
 
 </template>
 

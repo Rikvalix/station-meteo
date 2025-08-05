@@ -15,8 +15,10 @@ export const useUserStore = defineStore('user', {
     getters: {
         // Recherche l'utilisateur courant
         getCurrentUser: () => {
-            if (!sessionStorage.getItem("user")) {
+            if (!sessionStorage.getItem("user") ||  sessionStorage.getItem("user")?.length === 0) {
                 return null
+            } else {
+                return {};
             }
         }
     },

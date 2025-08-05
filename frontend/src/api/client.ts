@@ -29,8 +29,11 @@ client.interceptors.response.use(
     },
     async function (error) {
         if (error.response && error.response.status === 401) {
+            console.log("redirection")
             await router.push("/login")
         }
         return Promise.reject(error)
     }
 )
+
+
