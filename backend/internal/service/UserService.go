@@ -24,6 +24,10 @@ func NewUserService(repo *repository.UserRepository, stationRepo *repository.Sta
 	}
 }
 
+func (userService *UserService) Me(userModel *model.UserModel) (*model.UserModel, error) {
+	return userModel, nil
+}
+
 func (userService *UserService) Login(data *form.LoginForm) (*model.UserModel, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -74,6 +78,31 @@ func (userService *UserService) createAuthToken(user *model.UserModel) (*model.U
 		}
 		return updateUser, nil
 	}
+}
+
+func (userService *UserService) UpdatePassword(user *model.UserModel, oldPassword string, newPassword string) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	oldHash, _ := hashPassword(oldPassword)
+	if oldHash != user.Password {
+		return errors.New("l'ancien mot de passe ne correspond pas")
+	}
+	// Check si le nouveau n'est pas l'ancien mot de passe
+	newHash, err := hashPassword(newPassword)
+	if err != nil {
+		return errors.New("erreur empêche le changement du mot de passe")
+	}
+	if newHash == oldHash {
+		return errors.New("l'ancien et le nouveau mot de passe sont similaires")
+	}
+	user.Password = newHash
+	user.AuthToken = "" // Destruction de la session actuelle
+	_, err = userService.userRepository.UpdateUser(ctx, user)
+	if err != nil {
+		return errors.New("erreur d'insertion en base de données")
+	}
+	return nil
 }
 
 // hashPassword Hashe le mot de passe courant

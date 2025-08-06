@@ -35,7 +35,8 @@ func InitRoutes(e *echo.Echo, db *mongo.Database) {
 	userAuthGroup := userGroup.Group("")
 	userAuthGroup.Use(middleware.APIKeyAuthMiddleware(db))
 	userAuthGroup.GET("/station", userHandler.GetAllStations)
-
+	userAuthGroup.GET("/me", userHandler.Me)
+	userAuthGroup.PUT("/update-password", userHandler.UpdatePassword)
 	// Routes liés aux mesures
 	stationGroup := e.Group("/api/v1/station")
 	stationGroup.Use(middleware.APIKeyAuthMiddleware(db))

@@ -13,5 +13,5 @@ type MeasureModel struct {
 	Humidity    float64       `json:"humidity" bson:"humidity"`       // Humidité
 	Address     string        `json:"address" bson:"address"`         // Adresse
 	Location    string        `json:"location" bson:"location"`       // Localisation (nom ou description)
-	StationID   bson.ObjectID `json:"station_id" bson:"station_id"`   // Référence à la station météo
+	StationID   bson.ObjectID `json:"-" bson:"station_id"`            // Référence à la station météo
 }

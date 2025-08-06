@@ -43,20 +43,27 @@ func (h *MeasurementHandler) CreateMeasure(c echo.Context) error {
 // GetAllMeasures Récupération de toutes les mesures
 func (h *MeasurementHandler) GetAllMeasures(c echo.Context) error {
 	limit := c.QueryParam("limit")
+	date := c.QueryParam("date")
 	stationId := c.QueryParam("station")
-	// Conversion int
-	limitConvert, err := strconv.Atoi(limit)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, "Limit must be an integer")
-	}
+
 	if len(stationId) == 0 {
 		return c.JSON(http.StatusBadRequest, "Station ID is required")
 	}
-	measurements, err := h.service.GetAllMeasurements(limitConvert, stationId)
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{
-			"error": "failed to fetch measurements",
-		})
+	var measurements []model.MeasureModel
+	var serviceError error
+	// Si date est non nul
+	if len(date) > 0 {
+		measurements, serviceError = h.service.GetMeasuresByDate(date)
+	} else {
+		// Conversion int
+		limitConvert, err := strconv.Atoi(limit)
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, "Limit must be an integer")
+		}
+		measurements, serviceError = h.service.GetAllMeasurements(limitConvert, stationId)
+	}
+	if serviceError != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": serviceError.Error()})
 	}
 
 	return c.JSON(http.StatusOK, measurements)
@@ -73,6 +80,19 @@ func (h *MeasurementHandler) GetMeasureById(c echo.Context) error {
 	}
 	return c.JSON(http.StatusOK, measure)
 
+}
+
+// GetMeasuresByDate Récupération d'une mesure avec une date
+func (h *MeasurementHandler) GetMeasuresByDate(c echo.Context) error {
+	date := c.QueryParam("date")
+
+	measure, err := h.service.GetMeasuresByDate(date)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{
+			"error": "failed to fetch measurements",
+		})
+	}
+	return c.JSON(http.StatusOK, measure)
 }
 
 // GetLatestMeasure Récupération de la dernière mesure

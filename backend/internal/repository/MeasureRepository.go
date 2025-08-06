@@ -6,6 +6,7 @@ import (
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 	"station_meteo_api/internal/model"
+	"time"
 )
 
 type MeasureRepository struct {
@@ -38,6 +39,39 @@ func (r *MeasureRepository) FindByStationId(ctx context.Context, stationId bson.
 
 	}
 	return &result, nil
+}
+
+func (r *MeasureRepository) FindBySpecificDay(ctx context.Context, date time.Time) ([]model.MeasureModel, error) {
+	filter := bson.M{
+		"date": bson.M{
+			"$gte": date,
+			"$lt":  date.Add(24 * time.Hour),
+		},
+	}
+	cursor, err := r.collection.Find(ctx, filter)
+
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	var results []model.MeasureModel
+
+	// Parcourt le curseur
+	for cursor.Next(ctx) {
+		var m model.MeasureModel
+		if err := cursor.Decode(&m); err != nil {
+			return nil, err
+		}
+		results = append(results, m)
+	}
+
+	// Vérifie les erreurs de parcours
+	if err := cursor.Err(); err != nil {
+		return nil, err
+	}
+
+	return results, nil
 }
 
 func (r *MeasureRepository) FindAll(ctx context.Context, limit int, stationId bson.ObjectID) ([]model.MeasureModel, error) {
